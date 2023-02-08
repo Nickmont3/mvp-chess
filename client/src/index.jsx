@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import { Button } from 'react-bootstrap';
 import $ from 'jquery';
+import Board from './components/Board.jsx';
 
 const { useState } = React;
 
@@ -67,6 +68,7 @@ const App = () => {
 
   return (
     <div>
+      <Board board={board}/>
       {/* Buttons for testing */}
       <div className='startButton'>
         <Button onClick={setup}>
@@ -78,9 +80,8 @@ const App = () => {
           Move
         </Button>
       </div>
-      <div className='board'>
-        {JSON.stringify(board)}
-      </div>
+
+      {JSON.stringify(board)}
     </div>
   );
 }

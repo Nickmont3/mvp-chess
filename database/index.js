@@ -74,6 +74,9 @@ module.exports.movePiece = (from, to) => {
   let fromData = Board.find({"coor": from}).exec();
   fromData
     .then(results => {
+      if (!results || !results[0]) {
+        throw results;
+      }
       var fromPiece = JSON.stringify(results[0].piece);
       var fromColor = JSON.stringify(results[0].pieceColor);
       Board.updateOne({"coor": from}, {"piece": "none", "pieceColor": -1}).exec().then(results => {
@@ -82,6 +85,9 @@ module.exports.movePiece = (from, to) => {
       Board.updateOne({"coor": to}, {"piece": JSON.parse(fromPiece), "pieceColor": JSON.parse(fromColor)}).exec().then(results => {
         console.log("moved piece", results);
       });
+    })
+    .catch(err => {
+      console.log('oops illegal move');
     });
   // Board.updateOne({})
 }
