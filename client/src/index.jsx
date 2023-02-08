@@ -39,13 +39,37 @@ const App = () => {
     })
   }
 
+  const move = () => {
+    const settings = {
+      "url": "/move",
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+
+    $.ajax(settings).done(results => {
+      getBoard((results) => {
+        updateBoard(results)
+      });
+    })
+  }
+
+
   var [board, updateBoard] = useState('hello world');
 
   return (
     <div>
+      {/* Buttons for testing */}
       <div className='startButton'>
         <Button onClick={setup}>
           Start
+        </Button>
+      </div>
+      <div className='moveButton'>
+        <Button onClick={move}>
+          Move
         </Button>
       </div>
       <div className='board'>

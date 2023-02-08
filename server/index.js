@@ -30,6 +30,11 @@ app.get('/clearBoard', (req, res, next) => {
   res.sendStatus(202);
 });
 
+app.post('/move', (req, res, next) => {
+  db.movePiece('d2', 'd3');
+  res.sendStatus(202);
+})
+
 let port = 3000;
 
 app.listen(port, function() {
