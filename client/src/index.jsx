@@ -40,13 +40,19 @@ const App = () => {
   }
 
   const move = () => {
+    const from = prompt('Move from: ');
+    const to = prompt('Move to:  ');
     const settings = {
       "url": "/move",
       "method": "POST",
       "timeout": 0,
       "headers": {
         "Content-Type": "application/json"
-      }
+      },
+      "data": JSON.stringify({
+        "from": from,
+        "to": to
+      })
     }
 
     $.ajax(settings).done(results => {

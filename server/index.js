@@ -31,7 +31,7 @@ app.get('/clearBoard', (req, res, next) => {
 });
 
 app.post('/move', (req, res, next) => {
-  db.movePiece('d2', 'd3');
+  db.movePiece(req.body.from, req.body.to);
   res.sendStatus(202);
 })
 

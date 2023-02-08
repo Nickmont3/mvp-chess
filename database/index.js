@@ -76,9 +76,12 @@ module.exports.movePiece = (from, to) => {
     .then(results => {
       var fromPiece = JSON.stringify(results[0].piece);
       var fromColor = JSON.stringify(results[0].pieceColor);
-      console.log(fromPiece, fromColor);
-      Board.updateOne({"coor": from}, {"piece": "none", "pieceColor": -1}).exec()
-      Board.updateOne({"coor": to}, {"piece": JSON.parse(fromPiece), "pieceColor": JSON.parse(fromColor)}).exec();
+      Board.updateOne({"coor": from}, {"piece": "none", "pieceColor": -1}).exec().then(results => {
+        console.log("moved piece", results);
+      })
+      Board.updateOne({"coor": to}, {"piece": JSON.parse(fromPiece), "pieceColor": JSON.parse(fromColor)}).exec().then(results => {
+        console.log("moved piece", results);
+      });
     });
   // Board.updateOne({})
 }
