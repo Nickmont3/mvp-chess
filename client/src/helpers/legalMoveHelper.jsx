@@ -1,5 +1,5 @@
 const Promise = require('bluebird');
-import getSquareData from './boardHelper.jsx'
+import boardHelpers from './boardHelper.jsx'
 
 //================ Legal Moves ==================
 
@@ -8,7 +8,7 @@ const getPieceMoves = (piece, board, callback) => {
   let file = (piece.coor.charCodeAt(0) - 96);
   var output = [];
 
-  var getSquareStatus = getSquareData;
+  var getSquareStatus = boardHelpers.getSquareData;
   // getSquareStatus(board, piece.coor).then(results => console.log('here is square status: ', results));
 
   //canCapture set to true for pieces besides pawn
@@ -65,7 +65,6 @@ const getPieceMoves = (piece, board, callback) => {
 
         })
         .then(result => {
-          console.log('Squareee', result, 'here');
           const added = addSquareIfEmpty(result);
           //Pawn at starting pos, can move two squares if unblocked.
           if (rank === 2) {
@@ -95,32 +94,36 @@ const getPieceMoves = (piece, board, callback) => {
         })
         .then(result => {
           const upRight = result;
-          if (upRight.piece && upRight.piece !== "none") {
-            if (upRight.pieceColor !== piece.pieceColor) {
-              output.push(upRight.coor);
+          if (upRight) {
+            if (upRight.piece && upRight.piece !== "none") {
+              if (upRight.pieceColor !== piece.pieceColor) {
+                output.push(upRight.coor);
+              }
             }
           }
           return getSquareStatus(board, String.fromCharCode((file - 1) + 96) + (rank + 1));
         })
         .then(results => {
           const upLeft = results[0];
-          if (upLeft.piece && upLeft.piece !== "none") {
-            if (upLeft.pieceColor !== piece.pieceColor) {
-              output.push(upLeft.coor);
+          if (upLeft) {
+            if (upLeft.piece && upLeft.piece !== "none") {
+              if (upLeft.pieceColor !== piece.pieceColor) {
+                output.push(upLeft.coor);
+              }
             }
           }
           callback(output);
         });
     } else {
       getSquareStatus(board, piece.coor[0] + (rank - 1))
-        .then(results => {
-          if (results && results[0]){
-            return results[0]
-          } else {
-            return {piece: null};
-          }
-        })
-        .then(result => {
+      .then(results => {
+        if (results && results[0]){
+          return results[0]
+        } else {
+          return {piece: null};
+        }
+      })
+      .then(result => {
           const added = addSquareIfEmpty(result);
           //Pawn at starting pos, can move two squares if unblocked.
           if (rank === 7) {
@@ -150,25 +153,28 @@ const getPieceMoves = (piece, board, callback) => {
         })
         .then(result => {
           const upRight = result;
-          if (upRight.piece && upRight.piece !== "none") {
-            if (upRight.pieceColor !== piece.pieceColor) {
-              output.push(upRight.coor);
+          if (upRight) {
+            if (upRight.piece && upRight.piece !== "none") {
+              if (upRight.pieceColor !== piece.pieceColor) {
+                output.push(upRight.coor);
+              }
             }
           }
           return getSquareStatus(board, String.fromCharCode((file - 1) + 96) + (rank - 1));
         })
         .then(results => {
           const upLeft = results[0];
-          if (upLeft.piece && upLeft.piece !== "none") {
-            if (upLeft.pieceColor !== piece.pieceColor) {
-              output.push(upLeft.coor);
+          if (upLeft) {
+            if (upLeft.piece && upLeft.piece !== "none") {
+              if (upLeft.pieceColor !== piece.pieceColor) {
+                output.push(upLeft.coor);
+              }
             }
           }
           callback(output);
         });
     }
   } else if (piece.piece === 'K') {
-    console.log('king found');
     const moveList = [
       [1, 1],
       [1, 0],

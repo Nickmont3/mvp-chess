@@ -5,6 +5,7 @@ import $ from 'jquery';
 import Board from './components/Board.jsx';
 import legalMoveHelper from './helpers/legalMoveHelper.jsx';
 import getSquareData from './helpers/boardHelper.jsx';
+import getCheck from './helpers/checkHelper.jsx';
 
 const { useState } = React;
 
@@ -13,6 +14,7 @@ const App = () => {
   var turn = true;
 
   const setup = () => {
+
     const settings = {
       "url": "/startGame",
       "method": "GET",
@@ -24,6 +26,7 @@ const App = () => {
 
     $.ajax(settings).done(results => {
       getBoard((results) => {
+        updateTurn(1);
         updateBoard(results)
       });
     })
@@ -47,7 +50,7 @@ const App = () => {
   //Add async if using await
   const getLegals = () => {
     const from = prompt(turn ? "White's move\nPiece to move: " : "Black's move\nPiece to move: ");
-    return getSquareData(board, from)
+    return getSquareData.getSquareData(board, from)
       .then(results => {
         console.log(results[0].pieceColor);
         if (results[0].pieceColor !== turn) {
@@ -114,8 +117,23 @@ const App = () => {
 
       $.ajax(moveSettings).done(results => {
         getBoard((results) => {
-          turn ? updateTurn(0) : updateTurn(1);
-          updateBoard(results);
+          getCheck(Math.abs(turn-1), results, (checkHuh) => {
+            console.log(checkHuh, Math.abs(turn-1));
+            if (checkHuh) {
+              console.log('Dont let your king die!');
+              getLegals();
+            } else {
+              getCheck(turn, results, (checkHuh) => {
+                console.log(checkHuh, turn);
+                if (checkHuh) {
+                  console.log('Check!');
+                }
+              })
+              changeCheck(Math.abs(turn-1));
+              turn ? updateTurn(0) : updateTurn(1);
+              updateBoard(results);
+            }
+          })
         });
       })
     } else {
@@ -140,7 +158,7 @@ const App = () => {
   //   }
   //   $.ajax(settings);
   // }
-
+  var [check, changeCheck] = useState(-1);
   var [board, updateBoard] = useState('hello world');
   var [turn, updateTurn] = useState(1);
 

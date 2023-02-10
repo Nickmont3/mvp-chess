@@ -1,16 +1,30 @@
 const Promise = require('bluebird');
 
-const getSquareData = (board, squareCoor) => {
-  return new Promise((resolve, reject) => {
+const boardHelper = {
+  getSquareData: (board, squareCoor) => {
+    return new Promise((resolve, reject) => {
+      var output = board.filter((square) => {
+        return (square.coor === squareCoor);
+      });
+      if (output.length) {
+        resolve(output);
+      } else {
+        resolve([]);
+      }
+    });
+  },
+  getSquareDataSync: (board, squareCoor) => {
     var output = board.filter((square) => {
       return (square.coor === squareCoor);
     });
-    if (output.length) {
-      resolve(output);
-    } else {
-      resolve([]);
-    }
-  });
-};
+    return output;
+  },
+  getOtherPieces: (board, color) => {
+    return board.filter((square) => {
+      return (square.pieceColor === color);
+    });
+  }
+}
 
-export default getSquareData;
+
+export default boardHelper;
