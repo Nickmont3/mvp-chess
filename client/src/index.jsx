@@ -8,6 +8,8 @@ const { useState } = React;
 
 const App = () => {
 
+  var turn = true;
+
   const setup = () => {
     const settings = {
       "url": "/startGame",
@@ -41,8 +43,7 @@ const App = () => {
   }
 
   const getLegals = async () => {
-    const from = prompt('Move from: ');
-    var legalMoveList;
+    const from = prompt(turn ? "White's move " : "Black's move " + 'Move from: ');
     const legalSettings = {
       "url": "/legals",
       "method": "POST",
@@ -51,12 +52,16 @@ const App = () => {
         "Content-Type": "application/json"
       },
       "data": JSON.stringify({
-        "from": from
+        "from": from,
+        "turn": turn
       })
     }
 
     await $.ajax(legalSettings).done(legalMoves => {
-      if (legalMoves) {
+      if (typeof legalMoves === "string") {
+        console.log('Wrong turn!');
+        getLegals();
+      } else if (legalMoves) {
         move(legalMoves, from)
       } else {
         console.log('Cannot move that');
@@ -68,7 +73,6 @@ const App = () => {
   const move = (legalMoves, from) => {
 
     const to = prompt('Move to: ');
-    console.log(legalMoves);
     if (legalMoves.includes(to)) {
       const moveSettings = {
         "url": "/move",
@@ -85,12 +89,13 @@ const App = () => {
 
       $.ajax(moveSettings).done(results => {
         getBoard((results) => {
-          updateBoard(results)
+          turn ? updateTurn(0) : updateTurn(1);
+          updateBoard(results);
         });
       })
     } else {
       console.log('illegal move!');
-      move(legalMoves, from);
+      getLegals();
     }
 
   }
@@ -111,8 +116,8 @@ const App = () => {
     $.ajax(settings);
   }
 
-
   var [board, updateBoard] = useState('hello world');
+  var [turn, updateTurn] = useState(1);
 
   return (
     <div>

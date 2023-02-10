@@ -35,9 +35,13 @@ app.get('/clearBoard', (req, res, next) => {
 app.post('/legals', (req, res, next) => {
   db.getSquareStatus(req.body.from)
     .then(results => {
-      helpers.getPieceMoves(results[0], (output) => {
-        res.json(output);
-      });
+      if (results[0].pieceColor === req.body.turn) {
+        helpers.getPieceMoves(results[0], (output) => {
+          res.json(output);
+        });
+      } else {
+        res.sendStatus(202);
+      }
     });
 
 })
