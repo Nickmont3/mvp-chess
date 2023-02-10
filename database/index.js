@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/chessWithFriends');
 
+
+//========= BOARD ==============
+
 let boardSchema = mongoose.Schema({
   coor: String, //ie d4, e5, c1
   color: Number, //0 black 1 white
@@ -71,6 +74,7 @@ module.exports.clearBoard = () => {
 }
 
 module.exports.movePiece = (from, to) => {
+  console.log(from, to);
   let fromData = Board.find({"coor": from}).exec();
   fromData
     .then(results => {
@@ -89,5 +93,9 @@ module.exports.movePiece = (from, to) => {
     .catch(err => {
       console.log('oops illegal move');
     });
-  // Board.updateOne({})
+}
+
+
+module.exports.getSquareStatus = (coor) => {
+  return Board.find({"coor": coor}).exec();
 }

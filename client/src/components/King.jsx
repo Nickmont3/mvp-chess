@@ -14,7 +14,6 @@ const King = (props) => {
   } else {
     coor[1] = swapCoor(coor[1], whiteCoors, blackCoors);
   }
-  console.log(coor, props.piece)
   return (
     <div
     className={props.piece  + ' piece'}
@@ -23,7 +22,7 @@ const King = (props) => {
       left: coor[0] * 100 + 10 + 'px',
       top: coor[1] * 100 + 10 + 'px'
     }}
-    key={JSON.stringify(props)}>
+    >
     </div>
   )
 }

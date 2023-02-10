@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const db = require('../database/index.js');
 const Promise = require('bluebird');
+const helpers = require('../client/dist/helpers/legalMoveHelpers.js');
+
 
 
 let app = express();
@@ -29,6 +31,16 @@ app.get('/clearBoard', (req, res, next) => {
   db.clearBoard();
   res.sendStatus(202);
 });
+
+app.post('/legals', (req, res, next) => {
+  db.getSquareStatus(req.body.from)
+    .then(results => {
+      helpers.getPieceMoves(results[0], (output) => {
+        res.json(output);
+      });
+    });
+
+})
 
 app.post('/move', (req, res, next) => {
   db.movePiece(req.body.from, req.body.to);

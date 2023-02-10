@@ -23,7 +23,7 @@ const Queen = (props) => {
       left: coor[0] * 100 + 10 + 'px',
       top: coor[1] * 100 + 10 + 'px'
     }}
-    key={JSON.stringify(props)}>
+    >
 
     </div>
   )

@@ -40,27 +40,75 @@ const App = () => {
     })
   }
 
-  const move = () => {
+  const getLegals = async () => {
     const from = prompt('Move from: ');
-    const to = prompt('Move to:  ');
-    const settings = {
-      "url": "/move",
+    var legalMoveList;
+    const legalSettings = {
+      "url": "/legals",
       "method": "POST",
       "timeout": 0,
       "headers": {
         "Content-Type": "application/json"
       },
       "data": JSON.stringify({
-        "from": from,
-        "to": to
+        "from": from
       })
     }
 
-    $.ajax(settings).done(results => {
-      getBoard((results) => {
-        updateBoard(results)
-      });
-    })
+    await $.ajax(legalSettings).done(legalMoves => {
+      if (legalMoves) {
+        move(legalMoves, from)
+      } else {
+        console.log('Cannot move that');
+        getLegals();
+      }
+    });
+  }
+
+  const move = (legalMoves, from) => {
+
+    const to = prompt('Move to: ');
+    console.log(legalMoves);
+    if (legalMoves.includes(to)) {
+      const moveSettings = {
+        "url": "/move",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "data": JSON.stringify({
+          "from": from,
+          "to": to
+        })
+      }
+
+      $.ajax(moveSettings).done(results => {
+        getBoard((results) => {
+          updateBoard(results)
+        });
+      })
+    } else {
+      console.log('illegal move!');
+      move(legalMoves, from);
+    }
+
+  }
+
+  const test = () => {
+    const from = prompt('Move from: ');
+    const settings = {
+      "url": "/test",
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "data": JSON.stringify({
+        "from": from
+      })
+    }
+    $.ajax(settings);
   }
 
 
@@ -76,12 +124,17 @@ const App = () => {
         </Button>
       </div>
       <div className='moveButton'>
-        <Button onClick={move}>
+        <Button onClick={getLegals}>
           Move
         </Button>
       </div>
+      {/* <div className='testButton'>
+        <Button onClick={test}>
+          Test
+        </Button>
+      </div> */}
 
-      {JSON.stringify(board)}
+      {/* {JSON.stringify(board)} */}
     </div>
   );
 }
