@@ -31,20 +31,20 @@ app.get('/clearBoard', (req, res, next) => {
   db.clearBoard();
   res.sendStatus(202);
 });
+//Old code from when I was using get request for legal moves
+// app.post('/legals', (req, res, next) => {
+//   db.getSquareStatus(req.body.from)
+//     .then(results => {
+//       if (results[0].pieceColor === req.body.turn) {
+//         helpers.getPieceMoves(results[0], (output) => {
+//           res.json(output);
+//         });
+//       } else {
+//         res.sendStatus(202);
+//       }
+//     });
 
-app.post('/legals', (req, res, next) => {
-  db.getSquareStatus(req.body.from)
-    .then(results => {
-      if (results[0].pieceColor === req.body.turn) {
-        helpers.getPieceMoves(results[0], (output) => {
-          res.json(output);
-        });
-      } else {
-        res.sendStatus(202);
-      }
-    });
-
-})
+// })
 
 app.post('/move', (req, res, next) => {
   db.movePiece(req.body.from, req.body.to);
