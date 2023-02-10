@@ -124,6 +124,16 @@ const App = () => {
 
           $.ajax(moveSettings).done(results => {
             getBoard((results) => {
+              var promotedPawn = boardHelpers.pawnToPromote(results, turn)
+              if (promotedPawn) {
+                const changeTo = prompt('What piece would you like to promote to?');
+                results.map((square) => {
+                  if (square.coor === promotedPawn) {
+                    square.piece = changeTo;
+                  }
+                  return square;
+                })
+              }
               getCheck(turn, results, (checkHuh) => {
                 console.log(checkHuh, turn);
                 if (checkHuh) {

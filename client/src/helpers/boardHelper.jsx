@@ -43,6 +43,18 @@ const boardHelper = {
         return square;
       }
     });
+  },
+  // returns square of Pawn to promote if any, otherwise returns null
+  pawnToPromote: (board, color) => {
+    const fileList = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const swap = [1, 8];
+    for (var file of fileList) {
+      if (boardHelper.getSquareDataSync(board, file + swap[color])[0].piece === 'p') {
+        return file + swap[color];
+      }
+    }
+    return null;
+
   }
 }
 
