@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 import $ from 'jquery';
 import Board from './components/Board.jsx';
 import legalMoveHelper from './helpers/legalMoveHelper.jsx';
-import getSquareData from './helpers/boardHelper.jsx';
+import boardHelpers from './helpers/boardHelper.jsx';
 import getCheck from './helpers/checkHelper.jsx';
 
 const { useState } = React;
@@ -50,7 +50,7 @@ const App = () => {
   //Add async if using await
   const getLegals = () => {
     const from = prompt(turn ? "White's move\nPiece to move: " : "Black's move\nPiece to move: ");
-    return getSquareData.getSquareData(board, from)
+    return boardHelpers.getSquareData(board, from)
       .then(results => {
         console.log(results[0].pieceColor);
         if (results[0].pieceColor !== turn) {
@@ -101,28 +101,29 @@ const App = () => {
   const move = (legalMoves, from) => {
 
     const to = prompt('Move to: ');
-    if (legalMoves.includes(to)) {
-      const moveSettings = {
-        "url": "/move",
-        "method": "POST",
-        "timeout": 0,
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "data": JSON.stringify({
-          "from": from,
-          "to": to
-        })
-      }
+    const boardCopy = JSON.stringify(boardHelpers.movePiece(JSON.stringify(board), from, to));
+    getCheck(Math.abs(turn-1), JSON.parse(boardCopy), (checkHuh) => {
+      console.log(checkHuh, Math.abs(turn-1));
+      if (checkHuh) {
+        console.log('Dont let your king die!');
+        getLegals();
+      } else {
+        if (legalMoves.includes(to)) {
+          const moveSettings = {
+            "url": "/move",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "data": JSON.stringify({
+              "from": from,
+              "to": to
+            })
+          }
 
-      $.ajax(moveSettings).done(results => {
-        getBoard((results) => {
-          getCheck(Math.abs(turn-1), results, (checkHuh) => {
-            console.log(checkHuh, Math.abs(turn-1));
-            if (checkHuh) {
-              console.log('Dont let your king die!');
-              getLegals();
-            } else {
+          $.ajax(moveSettings).done(results => {
+            getBoard((results) => {
               getCheck(turn, results, (checkHuh) => {
                 console.log(checkHuh, turn);
                 if (checkHuh) {
@@ -132,32 +133,35 @@ const App = () => {
               changeCheck(Math.abs(turn-1));
               turn ? updateTurn(0) : updateTurn(1);
               updateBoard(results);
-            }
-          })
-        });
-      })
-    } else {
-      console.log('illegal move!');
-      getLegals();
-    }
+
+            })
+          });
+        } else {
+          console.log('illegal move!');
+          getLegals();
+        }
+      }
+    });
+
 
   }
 
-  // const test = () => {
-  //   const from = prompt('Move from: ');
-  //   const settings = {
-  //     "url": "/test",
-  //     "method": "POST",
-  //     "timeout": 0,
-  //     "headers": {
-  //       "Content-Type": "application/json"
-  //     },
-  //     "data": JSON.stringify({
-  //       "from": from
-  //     })
-  //   }
-  //   $.ajax(settings);
-  // }
+  const test = () => {
+    console.log(boardHelpers.movePiece(board, 'd2', 'd4'));
+    // const from = prompt('Move from: ');
+    // const settings = {
+    //   "url": "/test",
+    //   "method": "POST",
+    //   "timeout": 0,
+    //   "headers": {
+    //     "Content-Type": "application/json"
+    //   },
+    //   "data": JSON.stringify({
+    //     "from": from
+    //   })
+    // }
+    // $.ajax(settings);
+  }
   var [check, changeCheck] = useState(-1);
   var [board, updateBoard] = useState('hello world');
   var [turn, updateTurn] = useState(1);
@@ -176,13 +180,13 @@ const App = () => {
           Move
         </Button>
       </div>
-      {/* <div className='testButton'>
+      <div className='testButton'>
         <Button onClick={test}>
           Test
         </Button>
-      </div> */}
+      </div>
 
-      {/* {JSON.stringify(board)} */}
+      {/* {/* {JSON.stringify(board)} */}
     </div>
   );
 }
