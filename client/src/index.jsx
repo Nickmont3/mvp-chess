@@ -48,7 +48,7 @@ const App = () => {
   }
 
   //Add async if using await
-  const getLegals = (from = null) => {
+  const getLegals = (from = null, keyboard = true) => {
     console.log('from', from);
     if (from === null) {
       from = prompt(turn ? "White's move\nPiece to move: " : "Black's move\nPiece to move: ");
@@ -64,7 +64,12 @@ const App = () => {
         const legalMoves = legalMoveHelper(results[0], board, (results) => {
           console.log(results);
           if (results.length) {
-            move(results, from);
+            if (keyboard) {
+              move(from, results);
+            } else {
+              updateLegals(results);
+              updateSel(from);
+            }
           } else {
             throw ('cant move that.');
           }
@@ -72,7 +77,12 @@ const App = () => {
       })
       .catch(err => {
         console.log(err);
-        getLegals();
+        if (keyboard) {
+          getLegals();
+        } else {
+          updateLegals([]);
+          updateSel('');
+        }
       });
     //This code was from when I was using get requests for legal moves but now only
     //use a post request on legal move.
@@ -102,15 +112,29 @@ const App = () => {
     // });
   }
 
-  const move = (legalMoves, from) => {
-
-    const to = prompt('Move to: ');
-    const boardCopy = JSON.stringify(boardHelpers.movePiece(JSON.stringify(board), from, to));
+  const move = (coor, legalMoves = legalMoves, keyboardIn = true) => {
+    var boardCopy;
+    var from;
+    var to;
+    if (keyboardIn) {
+      to = prompt('Move to: ');
+      from = coor;
+      boardCopy = JSON.stringify(boardHelpers.movePiece(JSON.stringify(board), from, to));
+    } else {
+      to = coor;
+      from = selectedCoor;
+      boardCopy = JSON.stringify(boardHelpers.movePiece(JSON.stringify(board), from, to));
+    }
     getCheck(Math.abs(turn-1), JSON.parse(boardCopy), (checkHuh) => {
       console.log(checkHuh, Math.abs(turn-1));
       if (checkHuh) {
         console.log('Dont let your king die!');
-        getLegals();
+        if (keyboardIn) {
+          getLegals();
+        } else {
+          updateLegals([]);
+          updateSel('');
+        }
       } else {
         if (legalMoves.includes(to)) {
           const moveSettings = {
@@ -147,12 +171,19 @@ const App = () => {
               changeCheck(Math.abs(turn-1));
               turn ? updateTurn(0) : updateTurn(1);
               updateBoard(results);
+              updateLegals([]);
+              updateSel('');
 
             })
           });
         } else {
           console.log('illegal move!');
-          getLegals();
+          if (keyboardIn) {
+            getLegals();
+          } else {
+            updateLegals([]);
+            updateSel('');
+          }
         }
       }
     });
@@ -160,22 +191,22 @@ const App = () => {
 
   }
 
-  const test = () => {
-    console.log(boardHelpers.movePiece(board, 'd2', 'd4'));
-    // const from = prompt('Move from: ');
-    // const settings = {
-    //   "url": "/test",
-    //   "method": "POST",
-    //   "timeout": 0,
-    //   "headers": {
-    //     "Content-Type": "application/json"
-    //   },
-    //   "data": JSON.stringify({
-    //     "from": from
-    //   })
-    // }
-    // $.ajax(settings);
-  }
+  // const test = () => {
+  //   console.log(boardHelpers.movePiece(board, 'd2', 'd4'));
+  //   // const from = prompt('Move from: ');
+  //   // const settings = {
+  //   //   "url": "/test",
+  //   //   "method": "POST",
+  //   //   "timeout": 0,
+  //   //   "headers": {
+  //   //     "Content-Type": "application/json"
+  //   //   },
+  //   //   "data": JSON.stringify({
+  //   //     "from": from
+  //   //   })
+  //   // }
+  //   // $.ajax(settings);
+  // }
   const clickBoard = (event) => {
     const x = Math.ceil(event.clientX/100)
     const y = Math.ceil(event.clientY/100)
@@ -185,9 +216,16 @@ const App = () => {
     const swapCoor = (c, a1, a2) => {
       return a2[a1.indexOf(c)];
     }
-    getLegals(String.fromCharCode(x + 96) + swapCoor(y, whiteCoors, blackCoors));
+    const coor = String.fromCharCode(x + 96) + swapCoor(y, whiteCoors, blackCoors);
+    if (selectedCoor === '') {
+      getLegals(coor, false);
+    } else {
+      move(coor, legalMoves, false);
+    }
   }
 
+  var [selectedCoor, updateSel] = useState('');
+  var [legalMoves, updateLegals] = useState([]);
   var [check, changeCheck] = useState(-1);
   var [board, updateBoard] = useState('hello world');
   var [turn, updateTurn] = useState(1);
