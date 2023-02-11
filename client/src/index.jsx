@@ -53,8 +53,9 @@ const App = () => {
     return boardHelpers.getSquareData(board, from)
       .then(results => {
         console.log(results[0].pieceColor);
-        if (results[0].pieceColor !== turn) {
-          console.log('wrong turn');
+        if (results[0].pieceColor < 0) {
+          throw ('no piece there')
+        } else if (results[0].pieceColor !== turn ) {
           throw ('not your turn!');
         }
         const legalMoves = legalMoveHelper(results[0], board, (results) => {
@@ -196,7 +197,7 @@ const App = () => {
         </Button>
       </div>
 
-      {/* {/* {JSON.stringify(board)} */}
+      {JSON.stringify(board)}
     </div>
   );
 }

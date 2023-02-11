@@ -191,6 +191,7 @@ const getPieceMoves = (piece, board, callback) => {
     for (var move of moveList) {
       newFile = file + move[0];
       newRank = rank + move[1];
+      console.log('Kingtries: ', file, rank, newRank, newFile)
       var coor = String.fromCharCode(newFile + 96) + newRank;
       promises.push(
         getSquareStatus(board, coor)
@@ -202,7 +203,16 @@ const getPieceMoves = (piece, board, callback) => {
             }
           })
           .then(result => {
-            addSquareIfEmpty(result, true, piece);
+            var added = addSquareIfEmpty(result, true, piece);
+            if (!piece.hasMoved && added === 1) {
+              if (Number(result.coor[1]) === 8 || Number(result.coor[1]) === 1) {
+                const oneOver = boardHelpers.getSquareDataSync(board, 'g' + Number(result.coor[1]));
+                const shouldBeRook = boardHelpers.getSquareDataSync(board, 'h' + Number(result.coor[1]));
+                if (shouldBeRook[0].piece === 'R' && !shouldBeRook[0].hasMoved) {
+                  addSquareIfEmpty(oneOver[0]);
+                }
+              }
+            }
           })
       );
     }
