@@ -44,6 +44,7 @@ const boardHelper = {
       }
     });
   },
+
   // returns square of Pawn to promote if any, otherwise returns null
   pawnToPromote: (board, color) => {
     const fileList = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];

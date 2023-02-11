@@ -1,5 +1,6 @@
 const Promise = require('bluebird');
-import boardHelpers from './boardHelper.jsx'
+import boardHelpers from './boardHelper.jsx';
+import checkHelper from './checkHelper.jsx';
 
 //================ Legal Moves ==================
 
@@ -27,6 +28,12 @@ const getPieceMoves = (piece, board, callback) => {
       }
     }
     return 0;
+  };
+  const moveAndCheckCheck = (bc, from, to, color) => {
+    const moveMade = boardHelpers.movePiece(bc, from, to);
+    checkHelper(color, moveMade, (checkHuh) => {
+      return checkHuh;
+    })
   };
 
   const directionalMove = async (directions, callback) => {
@@ -214,16 +221,20 @@ const getPieceMoves = (piece, board, callback) => {
                 if (shouldBeRook[0].piece === 'R' && !shouldBeRook[0].hasMoved) {
                   addSquareIfEmpty(oneRight[0]);
                 }
+
                 //Check for queenside castle
                 const oneLeft = boardHelpers.getSquareDataSync(board, 'd' + Number(result.coor[1]));
                 const twoLeft = boardHelpers.getSquareDataSync(board, 'c' + Number(result.coor[1]));
                 const threeLeft = boardHelpers.getSquareDataSync(board, 'b' + Number(result.coor[1]));
                 const shouldBeRookQ = boardHelpers.getSquareDataSync(board, 'a' + Number(result.coor[1]));
+
                 if (shouldBeRookQ[0].piece === 'R' && !shouldBeRookQ[0].hasMoved) {
                   if (oneLeft[0].piece === 'none' && threeLeft[0].piece === 'none') {
                     addSquareIfEmpty(twoLeft[0]);
                   }
                 }
+
+
               }
             }
           })

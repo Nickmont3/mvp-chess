@@ -48,8 +48,11 @@ const App = () => {
   }
 
   //Add async if using await
-  const getLegals = () => {
-    const from = prompt(turn ? "White's move\nPiece to move: " : "Black's move\nPiece to move: ");
+  const getLegals = (from = null) => {
+    console.log('from', from);
+    if (from === null) {
+      from = prompt(turn ? "White's move\nPiece to move: " : "Black's move\nPiece to move: ");
+    }
     return boardHelpers.getSquareData(board, from)
       .then(results => {
         console.log(results[0].pieceColor);
@@ -173,13 +176,28 @@ const App = () => {
     // }
     // $.ajax(settings);
   }
+  const clickBoard = (event) => {
+    const x = Math.ceil(event.clientX/100)
+    const y = Math.ceil(event.clientY/100)
+    //Code to swap the coordinates for display depending on color playing
+    const whiteCoors = [1, 2, 3, 4, 5, 6, 7, 8];
+    const blackCoors = [8, 7, 6, 5, 4, 3, 2, 1];
+    const swapCoor = (c, a1, a2) => {
+      return a2[a1.indexOf(c)];
+    }
+    getLegals(String.fromCharCode(x + 96) + swapCoor(y, whiteCoors, blackCoors));
+  }
+
   var [check, changeCheck] = useState(-1);
   var [board, updateBoard] = useState('hello world');
   var [turn, updateTurn] = useState(1);
 
   return (
     <div>
-      <Board board={board}/>
+      <div onClick={clickBoard}>
+
+        <Board board={board} />
+      </div>
       {/* Buttons for testing */}
       <div className='startButton'>
         <Button onClick={setup}>
@@ -191,13 +209,13 @@ const App = () => {
           Move
         </Button>
       </div>
-      <div className='testButton'>
+      {/* <div className='testButton'>
         <Button onClick={test}>
           Test
         </Button>
       </div>
 
-      {JSON.stringify(board)}
+      {JSON.stringify(board)} */}
     </div>
   );
 }
