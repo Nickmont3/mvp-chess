@@ -204,12 +204,25 @@ const getPieceMoves = (piece, board, callback) => {
           })
           .then(result => {
             var added = addSquareIfEmpty(result, true, piece);
+            //Check if king can castle
+            //*NOTE* currently allows castle through check which is an illegal move
             if (!piece.hasMoved && added === 1) {
               if (Number(result.coor[1]) === 8 || Number(result.coor[1]) === 1) {
-                const oneOver = boardHelpers.getSquareDataSync(board, 'g' + Number(result.coor[1]));
+                //Check for kingside castle
+                const oneRight = boardHelpers.getSquareDataSync(board, 'g' + Number(result.coor[1]));
                 const shouldBeRook = boardHelpers.getSquareDataSync(board, 'h' + Number(result.coor[1]));
                 if (shouldBeRook[0].piece === 'R' && !shouldBeRook[0].hasMoved) {
-                  addSquareIfEmpty(oneOver[0]);
+                  addSquareIfEmpty(oneRight[0]);
+                }
+                //Check for queenside castle
+                const oneLeft = boardHelpers.getSquareDataSync(board, 'd' + Number(result.coor[1]));
+                const twoLeft = boardHelpers.getSquareDataSync(board, 'c' + Number(result.coor[1]));
+                const threeLeft = boardHelpers.getSquareDataSync(board, 'b' + Number(result.coor[1]));
+                const shouldBeRookQ = boardHelpers.getSquareDataSync(board, 'a' + Number(result.coor[1]));
+                if (shouldBeRookQ[0].piece === 'R' && !shouldBeRookQ[0].hasMoved) {
+                  if (oneLeft[0].piece === 'none' && threeLeft[0].piece === 'none') {
+                    addSquareIfEmpty(twoLeft[0]);
+                  }
                 }
               }
             }

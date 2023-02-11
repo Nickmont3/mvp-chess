@@ -86,6 +86,8 @@ module.exports.movePiece = (from, to) => {
       var castleQueen = false;
       if (results[0].piece === 'K' && (from[0] === 'e' && to[0] === 'g')) {
         castleKing = true;
+      } else if (results[0].piece === 'K' && (from[0] === 'e' && to[0] === 'c')) {
+        castleQueen = true;
       }
       var fromPiece = JSON.stringify(results[0].piece);
       var fromColor = JSON.stringify(results[0].pieceColor);
@@ -101,6 +103,14 @@ module.exports.movePiece = (from, to) => {
           console.log("moved rook", results);
         });
         Board.updateOne({"coor": 'f' + from[1]}, {"piece": "R", "pieceColor": JSON.parse(fromColor), "hasMoved": true}).exec().then(results => {
+          console.log("moved piece", results);
+        });
+      } else if (castleQueen) {
+        //Move rook over three squares right
+        Board.updateOne({"coor": 'a' + from[1]}, {"piece": "none", "pieceColor": -1, "hasMoved": false}).exec().then(results => {
+          console.log("moved rook", results);
+        });
+        Board.updateOne({"coor": 'd' + from[1]}, {"piece": "R", "pieceColor": JSON.parse(fromColor), "hasMoved": true}).exec().then(results => {
           console.log("moved piece", results);
         });
       }
