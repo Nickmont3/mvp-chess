@@ -230,6 +230,10 @@ const App = () => {
   var [board, updateBoard] = useState('hello world');
   var [turn, updateTurn] = useState(1);
 
+  React.useEffect(() => {
+    getBoard(updateBoard);
+  }, [board]);
+
   return (
     <div>
       <div onClick={clickBoard}>
